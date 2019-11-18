@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Divider,Button,Input } from 'antd';
+import './bugList.less';
 const { Search } = Input;
 
 const columns = [
@@ -68,9 +69,12 @@ class bugList extends Component {
                     <Search
                         placeholder="input search text"
                         onSearch={value => console.log(value)}
-                        style={{ width: 400 }}
+                        style={{ width: 400 }} enterButton
                     />
-                    <Button type="primary">发布问题</Button>
+                    <div className="button">
+                        <Button type="primary">提问题</Button>
+                        <Button>发布问题</Button>
+                    </div>
                 </div>
                 <Table columns={columns} dataSource={data} />
             </div>
