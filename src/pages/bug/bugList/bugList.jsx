@@ -8,7 +8,7 @@ const columns = [
         title: '标题',
         dataIndex: 'title',
         key: 'title',
-        render: text => <a>{text}</a>,
+        render: text => <a href="./bugDetail">{text}</a>,
     },
     {
         title: '描述',
@@ -65,7 +65,7 @@ class bugList extends Component {
     render() {
         return (
             <div>
-                <div class="header">
+                <div className="header">
                     <Search
                         placeholder="input search text"
                         onSearch={value => console.log(value)}

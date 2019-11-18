@@ -4,9 +4,6 @@ import { Statistic, Row, Col } from 'antd';
 const { Countdown } = Statistic;
 const deadline = new Date().setFullYear(2020,1,1)
 
-function onFinish() {
-    console.log('finished!');
-}
 class home extends Component {
     render() {
         return (

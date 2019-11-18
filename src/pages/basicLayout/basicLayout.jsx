@@ -8,6 +8,7 @@ import { Layout } from 'antd';
 import home from '../home/home';
 import addBug from '../bug/addBug/addBug';
 import bugList from '../bug/bugList/bugList';
+import bugDetail from '../bug/bugDetail/bugDetail';
 import other from '../other/other';
 // 引入组件
 import SiderMenu from "../../components/SiderMenu/index";
@@ -52,6 +53,11 @@ const routes = [
         main: bugList
     },
     {
+        path: "/bug/bugDetail",
+        exact: true,
+        main: bugDetail
+    },
+    {
         path: "/other",
         exact: true,
         main: other
@@ -77,7 +83,9 @@ class BasicLayout extends React.Component{
                     <SiderMenu  menus={menus}></SiderMenu>
                 </Sider>
                 <Layout>
-                    <Header style={{ background: '#fff', padding: 0 }} />
+                    <Header style={{ background: '#fff', padding: 0 }}>
+                        <span style={{ marginLeft: '20px'}}>{'卡车之家前端系统'}</span>
+                    </Header>
                     <Content style={{ margin: '16px' }}>
                         <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
                             <Switch>
