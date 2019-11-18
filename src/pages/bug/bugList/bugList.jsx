@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Table, Divider,Button } from 'antd';
+import { Table, Divider,Button,Input } from 'antd';
+const { Search } = Input;
+
 const columns = [
     {
         title: '标题',
@@ -62,12 +64,13 @@ class bugList extends Component {
     render() {
         return (
             <div>
-                <div>
-                    <Button type="primary">Primary</Button>
-                    <Button>Default</Button>
-                    <Button type="dashed">Dashed</Button>
-                    <Button type="danger">Danger</Button>
-                    <Button type="link">Link</Button>
+                <div class="header">
+                    <Search
+                        placeholder="input search text"
+                        onSearch={value => console.log(value)}
+                        style={{ width: 400 }}
+                    />
+                    <Button type="primary">发布问题</Button>
                 </div>
                 <Table columns={columns} dataSource={data} />
             </div>
