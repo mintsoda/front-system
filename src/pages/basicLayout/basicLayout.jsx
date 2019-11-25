@@ -86,8 +86,8 @@ class BasicLayout extends React.Component{
                     <Header style={{ background: '#fff', padding: 0 }}>
                         <span style={{ marginLeft: '20px'}}>{'卡车之家前端系统'}</span>
                     </Header>
-                    <Content style={{ margin: '16px' }}>
-                        <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
+                    <Content style={{ margin: '16px', minWidth: 900}}>
+                        <div style={{ padding: 24, background: '#fff', minHeight: 360}}>
                             <Switch>
                                 {routes.map((route, index) => (
                                     <Route

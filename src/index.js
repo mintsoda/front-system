@@ -5,7 +5,7 @@ import 'antd/dist/antd.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import {BrowserRouter} from 'react-router-dom'
-import Routers from './router';
+// import Routers from './router';
 
 ReactDOM.render(
     <BrowserRouter>

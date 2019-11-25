@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Form, Icon, Input, Button} from 'antd';
 import './register.less';
+import XHR from "../../api/apis";
+
 
 class register extends Component {
     state = {
@@ -10,7 +12,14 @@ class register extends Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log('Received values of form: ', values);
+                XHR.register({
+                    username: values.username,
+                    password: values.password
+                }).then((res) => {
+                    console.log(res);
+                }).catch(() => {
+
+                })
             }
         });
     };
@@ -88,6 +97,11 @@ class register extends Component {
                 </Form>
             </div>
         );
+    }
+    componentDidMount () {
+    }
+
+    componentWillUnmount () {
     }
 }
 

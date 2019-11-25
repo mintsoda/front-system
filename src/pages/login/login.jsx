@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Form, Icon, Input, Button } from 'antd';
 import './login.less';
 import XHR from "../../api/apis";
+import storage from "../../utils/storage";
 
 
 class login extends Component {
@@ -9,7 +10,17 @@ class login extends Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log('Received values of form: ', values);
+                XHR.login(values).then((res) => {
+                    let {tip,token} = res.data
+                    console.log(token)
+                    if(token){
+                        storage.set('token',token)
+                        window.location.href = '/'
+                    }
+                    console.log(res);
+                }).catch(() => {
+
+                })
             }
         });
     };

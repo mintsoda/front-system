@@ -1,57 +1,91 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import './addBug.less';
 import {
     Form,
     Input,
     Select,
     Button,
 } from 'antd';
-import bugList from "../bugList/bugList";
-import E from 'wangeditor'
+import Editor from 'wangeditor'
+import XHR from "../../../api/apis";
 
 const { Option } = Select;
-const { TextArea } = Input;
 
 class addBug extends React.Component {
     state = {
-        checkNick: '',
-        confirmDirty: false,
-        autoCompleteResult: [],
+        // tag列表
+        tagList: [],
+        // 标题
+        title: '',
+        // 描述
+        description: '',
+        // 标签
+        tag: '',
+        // 解决办法
+        answer: ''
     };
-    handleChange = e => {
-        console.log(e)
+    handleChange = (e) => {
+        e.persist();
+        this.setState({
+            title: e.target.value
+        })
+    };
+    handleSelectChange = (value)=>{
+        this.setState({
+          tag: value
+      })
     };
     handleSubmit = e => {
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
-                console.log('Received values of form: ', values);
+                console.log(values)
+                XHR.addBug({
+
+                }).then((res) => {
+                   console.log()
+                })
             }
         });
     };
-
+    getTagList= ()=>{
+        XHR.getTags({}).then((res) => {
+            this.setState({
+                tagList: res.data
+            })
+        })
+    };
+    validateEditorFrom = (rule, value, callback) => {
+        //此处根据富文本框的text值进行验证，但注意富文本框中输入空格，使用‘&nbsp‘表示，此方法不能处理只输入空格的验证。
+        // if (this.state.editorText.trim() === '') {
+        //     callback('不能为空');
+        // }
+        // Note: 必须总是返回一个 callback，否则 validateFieldsAndScroll 无法响应
+        callback();
+    }
     render() {
         const { getFieldDecorator } = this.props.form;
-        const { autoCompleteResult } = this.state;
 
         const formItemLayout = {
             labelCol: {
-                xs: { span: 24 },
-                sm: { span: 5 },
+                xs: { span: 16 },
+                sm: { span: 2 },
             },
             wrapperCol: {
                 xs: { span: 24 },
-                sm: { span: 12 },
+                sm: { span: 20 },
             },
         };
         const tailFormItemLayout = {
             wrapperCol: {
                 xs: {
-                    span: 24,
+                    span: 16,
                     offset: 0,
                 },
                 sm: {
                     span: 24,
-                    offset: 5,
+                    offset: 2,
                 },
             },
         };
@@ -61,36 +95,44 @@ class addBug extends React.Component {
                 <Form.Item
                     label={'标题'}
                 >
-                    {getFieldDecorator('name', {
+                    {
+                        getFieldDecorator('title', {
                         rules: [{ required: true, message: '请输入标题!', whitespace: true }],
-                    })(<Input />)}
+                    })(<Input placeholder={'请输入标题'}/>)
+                    }
                 </Form.Item>
                 <Form.Item
                     label={'描述'}
                 >
                     {
-                        <div ref="editorElem" style={{textAlign: 'left'}}>
-                        </div>
+                        getFieldDecorator('description', {
+                            rules: [{ required: true, message: '请输入描述!' }],
+                        },{
+                            // 使用自定义的校验规则
+                            validator: this.validateEditorFrom
+                        })(<div ref={(ref) => this.editorElem = ref} style={{textAlign: 'left'}}></div>)
                     }
                 </Form.Item>
                 <Form.Item label={'标签'}>
                     {
-                        getFieldDecorator('select',{
+                        getFieldDecorator('tag',{
                             rules: [{ required: true, message: '请选择一个类型!' }],
-                        })(<Select placeholder={'请选择一个类型'} style={{ width: 200 }} onChange={this.handleChange}>
-                            <Option value="ios">Ios</Option>
-                            <Option value="android">Android</Option>
-                            <Option value="css">css</Option>
-                            <Option value="javascript">javascript</Option>
-                            <Option value="vue">vue</Option>
-                            <Option value="react">react</Option>
+                        })(<Select placeholder={'请选择一个类型'} style={{ width: 200 }}>
+                            {this.state.tagList.map((tag) => (
+                                <Option value={tag.id} key={tag.id}>{tag.name}</Option>
+                            ))}
                         </Select>)
                     }
                 </Form.Item>
                 <Form.Item label={'解决办法'}>
-                    {getFieldDecorator('solution', {
-                        rules: [{ required: true, message: '请输入解决办法!', whitespace: true }],
-                    })(<TextArea rows={4} />)}
+                    {
+                        getFieldDecorator('answer', {
+                            rules: [{ required: true, message: '请输入描述!' }],
+                        },{
+                            // 使用自定义的校验规则
+                            validator: this.validateEditorFrom
+                        })(<div ref={(ref) => this.editorElemSolve = ref} style={{textAlign: 'left'}}></div>)
+                    }
                 </Form.Item>
                 <Form.Item {...tailFormItemLayout}>
                     <Button type="primary" htmlType="submit">
@@ -101,15 +143,30 @@ class addBug extends React.Component {
         );
     }
     componentDidMount() {
-        const elem = this.refs.editorElem
-        const editor = new E(elem)
+        this.getTagList()
+        const elem = ReactDOM.findDOMNode(this.editorElem)
+        const editor = new Editor(elem)
         // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
         editor.customConfig.onchange = html => {
-            this.setState({
-                editorContent: html
-            })
+            //将html值设为form表单的desc属性值
+            this.props.form.setFieldsValue({
+                'description': html
+            });
         }
         editor.create()
+
+        const editorElemSolve = ReactDOM.findDOMNode(this.editorElemSolve)
+        const editorSolve = new Editor(editorElemSolve)
+        // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
+        editorSolve.customConfig.onchange = html => {
+            // this.setState({
+            //     answer: html
+            // })
+            this.props.form.setFieldsValue({
+                'answer': html
+            });
+        }
+        editorSolve.create()
     }
 }
 

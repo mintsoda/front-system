@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Table, Divider,Button,Input } from 'antd';
+import { Tabs,Table, Divider,Button,Input } from 'antd';
 import './bugList.less';
+import XHR from "../../../api/apis";
 const { Search } = Input;
+const { TabPane } = Tabs;
 
 const columns = [
     {
@@ -37,7 +39,6 @@ const columns = [
         ),
     },
 ];
-
 const data = [
     {
         key: '1',
@@ -61,24 +62,38 @@ const data = [
         resolution: 'New York No. 1 Lake Park'
     }
     ];
+const listHeader = <div className="header">
+    <Search
+        placeholder="input search text"
+        onSearch={value => console.log(value)}
+        style={{ width: 400 }} enterButton
+    />
+    <div className="button">
+        <Button type="primary">提问题</Button>
+        <Button>发布问题</Button>
+    </div>
+</div>;
 class bugList extends Component {
     render() {
         return (
             <div>
-                <div className="header">
-                    <Search
-                        placeholder="input search text"
-                        onSearch={value => console.log(value)}
-                        style={{ width: 400 }} enterButton
-                    />
-                    <div className="button">
-                        <Button type="primary">提问题</Button>
-                        <Button>发布问题</Button>
-                    </div>
-                </div>
-                <Table columns={columns} dataSource={data} />
+                <Tabs tabBarExtraContent={listHeader}>
+                    <TabPane tab="Tab 1" key="1">
+                        <Table columns={columns} dataSource={data} />
+                    </TabPane>
+                    <TabPane tab="Tab 2" key="2">
+                        <Table columns={columns} dataSource={data} />
+                    </TabPane>
+                </Tabs>
             </div>
         );
+    }
+    componentDidMount () {
+        XHR.getTags({}).then((res) => {
+            console.log(res);
+        }).catch(() => {
+
+        })
     }
 }
 
