@@ -41,9 +41,7 @@ class addBug extends React.Component {
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 console.log(values)
-                XHR.addBug({
-
-                }).then((res) => {
+                XHR.publishBug(values).then((res) => {
                    console.log()
                 })
             }

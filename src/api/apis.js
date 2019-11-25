@@ -2,7 +2,7 @@ import fetch from "./ajax"
 
 export const DEBUG = true // 是否开发模式
 // const ROOT_DEV ='/api'
-const ROOT_DEV = 'http://127.0.0.1:7001' // 测试地址
+const ROOT_DEV = 'http://127.0.0.1:7002' // 测试地址
 const ROOT = 'http://dmio-api.360che.com'
 const baseUrl = DEBUG ? ROOT_DEV : ROOT
 
@@ -31,12 +31,20 @@ export default {
             type: 'GET'
         })
     },
-    // 新增bug
-    addBug (json){
+    // 发布bug
+    publishBug (json){
         return fetch({
-            url: `${baseUrl}/addBug`,
+            url: `${baseUrl}/publishBug`,
             body: json,
             type: 'POST'
+        })
+    },
+    // 获取bug列表
+    getBugList(json){
+        return fetch({
+            url: `${baseUrl}/getBugList`,
+            body: json,
+            type: 'GET'
         })
     }
 }
