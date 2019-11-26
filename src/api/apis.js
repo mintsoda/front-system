@@ -23,10 +23,10 @@ export default {
             type: 'GET'
         })
     },
-    // 获取标签
-    getTags (json) {
+    // 获取
+    getDepartment (json) {
         return fetch({
-            url: `${baseUrl}/getTags`,
+            url: `${baseUrl}/getDepartment`,
             body: json,
             type: 'GET'
         })

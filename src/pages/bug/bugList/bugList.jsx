@@ -13,9 +13,14 @@ const columns = [
         render: text => <a href="./bugDetail">{text}</a>,
     },
     {
-        title: '分类',
+        title: '标签',
         dataIndex: 'tag',
         key: 'tag',
+    },
+    {
+        title: '发布人',
+        dataIndex: 'publisher_name',
+        key: 'publisher_name',
     },
     {
         title: '描述',
@@ -25,23 +30,42 @@ const columns = [
 ];
 class bugList extends Component {
     state = {
+        // 部门列表
+        departmentList: [],
         // 列表类型
         status: 0,
+        // 部门
+        department: 0,
         // 搜索内容
         search: '',
         // 列表数据
         data: [],
         pagination: {
-            pageSize: 5,
+            pageSize: 15,
             current: 1
         },
         loading: false,
     };
     // 状态值改变
-    handleChange = (e)=>{
-        console.log(e)
+    handleStatusChange = (value)=>{
+        const pager = { ...this.state.pagination };
+        pager.current = 1;
         this.setState({
-            status: e
+            pagination: pager,
+            status: value
+        },()=>{
+            this.fetch();
+        })
+    }
+    // 部门值改变
+    handleDepChange = (value)=>{
+        const pager = { ...this.state.pagination };
+        pager.current = 1;
+        this.setState({
+            pagination: pager,
+            department: value
+        },()=>{
+            this.fetch();
         })
     }
     // 搜索值改变
@@ -62,21 +86,23 @@ class bugList extends Component {
         this.setState({
             pagination: pager,
         },()=>{
-            console.log('pager',pager)
             this.fetch();
         });
     };
-
+    // 获取部门
+    getDepartment= ()=>{
+        XHR.getDepartment({}).then((res) => {
+            this.setState({
+                departmentList: res.data
+            })
+        })
+    };
     fetch = (params = {}) => {
-        console.log('params:', {
-            ...params,
-            search: this.state.search,
-            pageSize: this.state.pagination.pageSize,
-            page: this.state.pagination.current
-        });
         this.setState({ loading: true });
         XHR.getBugList({
             ...params,
+            status:  this.state.status,
+            department: this.state.department,
             search: this.state.search,
             pageSize: this.state.pagination.pageSize,
             page: this.state.pagination.current
@@ -109,11 +135,19 @@ class bugList extends Component {
         return (
             <div>
                 <div className="header">
-                    <div>
-                        <Select defaultValue="0" style={{ width: 120 }} onChange={this.handleChange}>
+                    <div className='header-left'>
+                        状态：
+                        <Select defaultValue="0" style={{ width: 120 }} onChange={this.handleStatusChange}>
                             <Option value="0">全部</Option>
                             <Option value="1">已解决</Option>
                             <Option value="2">未解决</Option>
+                        </Select>
+                        部门：
+                        <Select defaultValue="0" placeholder={'请选择一个部门'} style={{ width: 180 }}  onChange={this.handleDepChange}>
+                            <Option value="0">全部</Option>
+                            {this.state.departmentList.map((department) => (
+                                <Option value={department.id} key={department.id}>{department.name}</Option>
+                            ))}
                         </Select>
                     </div>
                     <div className="header-right">
@@ -138,6 +172,7 @@ class bugList extends Component {
     }
     componentDidMount () {
         this.fetch();
+        this.getDepartment()
     }
 }
 

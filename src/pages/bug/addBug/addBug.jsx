@@ -14,14 +14,16 @@ const { Option } = Select;
 
 class addBug extends React.Component {
     state = {
-        // tag列表
-        tagList: [],
+        // 部门列表
+        departmentList: [],
         // 标题
         title: '',
         // 描述
         description: '',
         // 标签
         tag: '',
+        // 部门
+        department: '',
         // 解决办法
         answer: ''
     };
@@ -33,7 +35,7 @@ class addBug extends React.Component {
     };
     handleSelectChange = (value)=>{
         this.setState({
-          tag: value
+          department: value
       })
     };
     handleSubmit = e => {
@@ -47,10 +49,10 @@ class addBug extends React.Component {
             }
         });
     };
-    getTagList= ()=>{
-        XHR.getTags({}).then((res) => {
+    getDepartment= ()=>{
+        XHR.getDepartment({}).then((res) => {
             this.setState({
-                tagList: res.data
+                departmentList: res.data
             })
         })
     };
@@ -111,13 +113,20 @@ class addBug extends React.Component {
                         })(<div ref={(ref) => this.editorElem = ref} style={{textAlign: 'left'}}></div>)
                     }
                 </Form.Item>
-                <Form.Item label={'标签'}>
+                <Form.Item
+                    label={'标签'}
+                >
                     {
-                        getFieldDecorator('tag',{
-                            rules: [{ required: true, message: '请选择一个类型!' }],
-                        })(<Select placeholder={'请选择一个类型'} style={{ width: 200 }}>
-                            {this.state.tagList.map((tag) => (
-                                <Option value={tag.id} key={tag.id}>{tag.name}</Option>
+                        getFieldDecorator('tag')(<Input placeholder={'请输入标签'}/>)
+                    }
+                </Form.Item>
+                <Form.Item label={'部门'}>
+                    {
+                        getFieldDecorator('department',{
+                            rules: [{ required: true, message: '请选择一个部门!' }],
+                        })(<Select placeholder={'请选择一个部门'} style={{ width: 200 }}>
+                            {this.state.departmentList.map((department) => (
+                                <Option value={department.id} key={department.id}>{department.name}</Option>
                             ))}
                         </Select>)
                     }
@@ -141,7 +150,7 @@ class addBug extends React.Component {
         );
     }
     componentDidMount() {
-        this.getTagList()
+        this.getDepartment()
         const elem = ReactDOM.findDOMNode(this.editorElem)
         const editor = new Editor(elem)
         // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
