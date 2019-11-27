@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import {List, Radio, Button, Pagination, message, Spin} from 'antd';
+import {List, Radio, Button, Pagination, message, Spin,Tag} from 'antd';
 import ReplyContent from '../../../components/ReplyContent'
 import './bugDetail.less';
 import XHR from "../../../api/apis";
-import ReactHtmlParser from 'react-html-parser';
+import Editor from 'wangeditor';
 
 class bugDetail extends Component {
     state = {
@@ -29,6 +29,8 @@ class bugDetail extends Component {
             return <Button onClick={
                 this.setFinallyAnswer.bind(this,item)
             }>设为答案</Button>
+        }else if(this.state.detailObj.answer_id === item.id){
+            return <Tag color="blue">最终答案</Tag>
         }
     }
     renderReplyContent = ()=>{
@@ -140,8 +142,7 @@ class bugDetail extends Component {
                     </header>
                     <article>
                         <h4>问题场景：</h4>
-                        <section>
-                            {ReactHtmlParser(this.state.detailObj.description)}
+                        <section dangerouslySetInnerHTML={{__html: this.state.detailObj.description}}>
                         </section>
                     </article>
                 </Spin>
@@ -160,7 +161,7 @@ class bugDetail extends Component {
                             <List.Item actions={[this.renderListAction(item)]}>
                                 <List.Item.Meta
                                     title={`${item.publisher_name} ${item.show_time?'发布于':''}${item.show_time}`}
-                                    description={ReactHtmlParser(item.content)}
+                                    description={<div dangerouslySetInnerHTML={{__html: item.content}}></div>}
                                 />
                             </List.Item>
                         )}

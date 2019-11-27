@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Select,Table,Button,Input } from 'antd';
-import ReactHtmlParser from 'react-html-parser';
+import { Select,Table,Button,Input,List,Tag } from 'antd';
 import './bugList.less';
 import XHR from "../../../api/apis";
 const { Search } = Input;
@@ -37,7 +36,7 @@ const columns = [
         dataIndex: 'description',
         key: 'description',
         render:(text)=>{
-            return ReactHtmlParser(text)
+            return <div dangerouslySetInnerHTML={{__html: text}}></div>
         }
     }
 ];
@@ -132,7 +131,6 @@ class bugList extends Component {
     };
     // 提问题及发布问题,提问题类型0，发布问题类型1
     publishBug=(type)=>{
-        console.log('bughhhh',type)
         window.location.href = `./addBug?type=${type}`
     }
     // 获取列表
@@ -172,7 +170,7 @@ class bugList extends Component {
                         <Search
                             placeholder="请输入搜索关键词"
                             onSearch={this.onSearch}
-                            style={{ width: 400 }} enterButton
+                            style={{ width: 300 }} enterButton
                         />
                         <div className="button">
                             <Button type="primary" onClick={this.publishBug.bind(this,0)}>提问题</Button>
@@ -180,11 +178,44 @@ class bugList extends Component {
                         </div>
                     </div>
                 </div>
-                <Table columns={columns} dataSource={this.state.data}
-                       rowKey="id"
-                       pagination={this.state.pagination}
-                       loading={this.state.loading}
-                       onChange={this.handleTableChange} />
+                {/*<Table columns={columns} dataSource={this.state.data}*/}
+                       {/*rowKey="id"*/}
+                       {/*pagination={this.state.pagination}*/}
+                       {/*loading={this.state.loading}*/}
+                       {/*onChange={this.handleTableChange} />*/}
+                <List
+                    itemLayout="vertical"
+                    size="large"
+                    pagination={{
+                        onChange: page => {
+                            const pager = { ...this.state.pagination };
+                            pager.current = page;
+                            this.setState({
+                                pagination: pager,
+                            },()=>{
+                                this.fetch();
+                            });
+                        },
+                        ...this.state.pagination,
+                    }}
+                    dataSource={this.state.data}
+                    renderItem={item => (
+                        <List.Item
+                            key={item.id}
+                            extra={
+                                <div>
+                                    {item.tag?<Tag>{item.tag}</Tag>:''}<Tag>{item.publisher_name} 发布{item.show_time?'于':''}{item.show_time}</Tag>
+                                </div>
+                            }
+                        >
+                            <List.Item.Meta
+                                title={<a href={`./bugDetail?id=${item.id}`}>{item.title}</a>}
+                                description={<div dangerouslySetInnerHTML={{__html: item.description}}></div>}
+                            />
+                            {item.content}
+                        </List.Item>
+                    )}
+                />
             </div>
         );
     }
