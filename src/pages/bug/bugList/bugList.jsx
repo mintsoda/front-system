@@ -2,6 +2,13 @@ import React, { Component } from 'react';
 import { Select,Table, Divider,Button,Input } from 'antd';
 import './bugList.less';
 import XHR from "../../../api/apis";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link,
+    useParams
+} from "react-router-dom";
 const { Search } = Input;
 const { Option } = Select;
 
@@ -10,7 +17,16 @@ const columns = [
         title: '标题',
         dataIndex: 'title',
         key: 'title',
-        render: text => <a href="./bugDetail">{text}</a>,
+        render: (text,record) => {
+            // let newHref = `./bugDetail?id=${record.id}`
+            // return <Router>
+            //     <Link to={newHref} >{text}</Link>
+            // </Router>
+            let newHref = `./bugDetail?id=${record.id}`
+            return {
+                children: <a href={newHref}>{text}</a>
+            };
+        },
     },
     {
         title: '标签',
@@ -173,6 +189,9 @@ class bugList extends Component {
     componentDidMount () {
         this.fetch();
         this.getDepartment()
+    }
+    componentWillReceiveProps(){
+        console.log('1111222222233333')
     }
 }
 

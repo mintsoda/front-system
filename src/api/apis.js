@@ -46,5 +46,37 @@ export default {
             body: json,
             type: 'GET'
         })
+    },
+    // 获取bug详情
+    getBugDetail(json){
+        return fetch({
+            url: `${baseUrl}/getBugDetail`,
+            body: json,
+            type: 'GET'
+        })
+    },
+    // 获取bug对应的答案
+    getBugAnswers(json){
+        return fetch({
+            url: `${baseUrl}/getBugAnswers`,
+            body: json,
+            type: 'GET'
+        })
+    },
+    // 回答问题
+    setBugAnswer(json){
+        return fetch({
+            url: `${baseUrl}/setBugAnswer`,
+            body: json,
+            type: 'POST'
+        })
+    },
+    // 设为答案
+    setFinallyAnswer(json){
+        return fetch({
+            url: `${baseUrl}/setFinallyAnswer`,
+            body: json,
+            type: 'POST'
+        })
     }
 }

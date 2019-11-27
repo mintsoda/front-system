@@ -1,59 +1,155 @@
 import React, { Component } from 'react';
-import { Divider,List,Radio,Button } from 'antd';
-// import AnswerItem from '../../../components/AnswerItem'
+import {List, Radio, Button, Pagination, message, Spin, Table} from 'antd';
+import ReplyContent from '../../../components/ReplyContent'
 import './bugDetail.less';
 import Editor from 'wangeditor'
 import ReactDOM from "react-dom";
+import XHR from "../../../api/apis";
+import ReactHtmlParser from 'react-html-parser';
 
-const data = [
-    {
-        title: 'Ant Design Title 1',
-    },
-    {
-        title: 'Ant Design Title 2',
-    },
-    {
-        title: 'Ant Design Title 3',
-    },
-    {
-        title: 'Ant Design Title 4',
-    },
-];
 class bugDetail extends Component {
     state = {
+        id: 0,
+        // 详情
+        detailObj: {},
+        // 答案列表
+        answerList: [],
         // 排序
         order: '0',
         pagination: {
-            pageSize: 15,
+            pageSize: 5,
             current: 1,
-            total: 100
+            total: 0
         },
+        // 我回答的问题
+        myAnswer: '',
+        answerLoading: true,
+        loading: true,
     }
-    handleOrderChange=()=>{
-        console.log('改变排序')
+    renderListAction =(item)=>{
+        if(this.state.detailObj.is_my&&!this.state.detailObj.answer_id){
+            return <Button onClick={
+                this.setFinallyAnswer.bind(this,item)
+            }>设为答案</Button>
+        }
+    }
+    renderReplyContent = ()=>{
+        if(!this.state.detailObj.answer_id){
+            return <div className="reply">
+                <div className="title">
+                    <h2>编写答案</h2>
+                    <Button onClick={this.answerBug}>发布</Button>
+                </div>
+                <ReplyContent transferMsg = {myAnswer => this.transferMsg(myAnswer)}></ReplyContent>
+            </div>;
+        }
+    }
+    renderPagination = ()=>{
+        if(this.state.pagination.total){
+            return <Pagination style={{textAlign:'right'}} current={this.state.pagination.current} pageSize={this.state.pagination.pageSize} total={this.state.pagination.total}  onChange={this.handleListChange}/>;
+        }
+    }
+    setFinallyAnswer=(item)=>{
+        XHR.setFinallyAnswer({
+            bug_id: this.state.id,
+            answer_id: item.id
+        }).then((res) => {
+            message.success('设置最终答案成功！');
+            const detailObj = { ...this.state.detailObj };
+            detailObj.answer_id = item.id;
+            this.setState({
+                detailObj: detailObj
+            })
+        })
+    }
+    transferMsg=(myAnswer)=> {
+        this.setState({
+            myAnswer
+        });
+    }
+    handleOrderChange=(event)=>{
+        const pager = { ...this.state.pagination };
+        pager.current = 1;
+        this.setState({
+            pagination: pager,
+            order: event.target.value
+        },()=>{
+            this.getAnswer()
+        })
+    }
+    // 获取问题详情
+    getDetail(){
+        XHR.getBugDetail({
+            id: this.state.id
+        }).then((res) => {
+            this.setState({
+                loading: false,
+                detailObj: res.data
+            })
+        })
+        this.getAnswer()
+    }
+    // 获取答案列表
+    getAnswer=()=>{
+        this.setState({ answerLoading: true });
+        XHR.getBugAnswers({
+            order: this.state.order,
+            bug_id: this.state.id,
+            page: this.state.pagination.current,
+            pageSize: this.state.pagination.pageSize
+        }).then((res) => {
+            const pagination = { ...this.state.pagination };
+            pagination.total = res.data.total;
+            this.setState({
+                answerLoading: false,
+                answerList: res.data.list,
+                pagination
+            })
+        })
+    }
+    handleListChange=(pagination)=>{
+        const pager = { ...this.state.pagination };
+        pager.current = pagination;
+        this.setState({
+            pagination: pager,
+        },()=>{
+            // console.log(1111,this.state.pagination)
+            this.getAnswer();
+        });
+    }
+    // 回答答案
+    answerBug=()=>{
+        XHR.setBugAnswer({
+            bug_id: this.state.id,
+            content: this.state.myAnswer
+        }).then((res) => {
+            message.success('发布答案成功！');
+            this.getAnswer();
+        })
     }
     render() {
+        const { state }  = this.state
         return (
-            <div className='detail'>
-                <header>
-                    <h2>input在dispaly：flex失效超出整体宽度</h2>
-                    <div className="title-more">
-                        <span>作者：余尚辉</span>
-                        <span>类型：app</span>
-                        <span>时间：2018-08-09</span>
-                    </div>
-                </header>
-                <article>
-                    <h4>问题场景：</h4>
-                    <section>
-                        最外层的盒子设置为弹性盒子，左边和右边的写成固定宽度，中间的input输入框设置为flex:1，希望input的宽度是所剩下的长度，结果是它比所剩下的长度要大，验证码这三个字就显示成两行了
-                        原因：input兼容弹性盒子有问题，它会有一个自己默认的最小长度，所以会导致验证码显示成两行
-                        解决办法：我们可以给input输入框加一个div父元素，然后这个div设置flex:1,input设置width:100%；即可解决问题
-                    </section>
-                </article>
+        <div className='detail'>
+                <Spin spinning={this.state.loading}>
+                    <header>
+                        <h2>{this.state.detailObj.title}</h2>
+                        <div className="title-more">
+                            <span>作者：{this.state.detailObj.publisher_name}</span>
+                            <span style={{display:(!this.state.detailObj.tag?'none':'initial')}}>类型：{this.state.detailObj.tag}</span>
+                            <span style={{display:(!this.state.detailObj.show_time?'none':'initial')}}>时间：{this.state.detailObj.show_time}</span>
+                        </div>
+                    </header>
+                    <article>
+                        <h4>问题场景：</h4>
+                        <section>
+                            {ReactHtmlParser(this.state.detailObj.description)}
+                        </section>
+                    </article>
+                </Spin>
                 <div className="answer">
                     <div className="title">
-                        <h2>1个回答</h2>
+                        <h2>{this.state.pagination.total}个回答</h2>
                         <Radio.Group value={this.state.order} onChange={this.handleOrderChange}>
                             <Radio.Button value="0">默认排序</Radio.Button>
                             <Radio.Button value="1">时间排序</Radio.Button>
@@ -61,40 +157,39 @@ class bugDetail extends Component {
                     </div>
                     <List
                         itemLayout="horizontal"
-                        dataSource={data}
-                        pagination={this.state.pagination}
+                        dataSource={this.state.answerList}
                         renderItem={item => (
-                            <List.Item actions={[<a key="list-loadmore-edit">设为答案</a>]}>
+                            <List.Item actions={[this.renderListAction(item)]}>
                                 <List.Item.Meta
-                                    title={<a href="https://ant.design">{item.title}</a>}
-                                    description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                                    title={`${item.publisher_name} ${item.show_time?'发布于':''}${item.show_time}`}
+                                    description={ReactHtmlParser(item.content)}
                                 />
                             </List.Item>
                         )}
+                        loading={this.state.answerLoading}
                     />
+                    {this.renderPagination()}
                 </div>
-                <div className="reply">
-                    <div className="title">
-                        <h2>编写答案</h2>
-                        <Button>发布</Button>
-                    </div>
-                    <div className="reply-content" ref='reply'>
-                    </div>
-                </div>
+                {this.renderReplyContent()}
             </div>
-        );
+            );
     }
     componentDidMount() {
-        const elem = this.refs.reply
-        const editor = new Editor(elem)
-        // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
-        editor.customConfig.onchange = html => {
-            //将html值设为form表单的desc属性值
-            this.props.form.setFieldsValue({
-                'description': html
-            });
-        }
-        editor.create()
+        let id = window.location.href.match(/id=(\d+)/) ? window.location.href.match(/id=(\d+)/)[1] : 0
+        this.setState({
+            id: parseInt(id)
+        },()=>{
+            this.getDetail()
+        })
+        // const elem = this.refs.reply
+        // const editor = new Editor(elem)
+        // // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
+        // editor.customConfig.onchange = html => {
+        //     this.setState({
+        //         myAnswer: html
+        //     })
+        // }
+        // editor.create()
     }
 }
 

@@ -17,6 +17,9 @@ class register extends Component {
                     password: values.password
                 }).then((res) => {
                     console.log(res);
+                    if(res.data){
+                        window.location.href = '/login'
+                    }
                 }).catch(() => {
 
                 })

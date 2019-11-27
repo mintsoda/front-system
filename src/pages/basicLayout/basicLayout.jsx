@@ -3,7 +3,7 @@ import {
     Switch,
     Route
 } from "react-router-dom";
-import { Layout } from 'antd';
+import { Layout,Icon } from 'antd';
 // 引入子页面
 import home from '../home/home';
 import addBug from '../bug/addBug/addBug';
@@ -12,6 +12,8 @@ import bugDetail from '../bug/bugDetail/bugDetail';
 import other from '../other/other';
 // 引入组件
 import SiderMenu from "../../components/SiderMenu/index";
+import './basicLayout.less';
+import storage from "../../utils/storage";
 
 const { Header, Content, Sider } = Layout;
 const menus = [
@@ -74,7 +76,11 @@ class BasicLayout extends React.Component{
         console.log(collapsed);
         this.setState({ collapsed });
     };
-
+    exitLogin(){
+        console.log('退出登录')
+        storage.remove('token');
+        window.location.href = '/login'
+    }
     render() {
         return (
             <Layout style={{ minHeight: '100vh' }}>
@@ -83,8 +89,9 @@ class BasicLayout extends React.Component{
                     <SiderMenu  menus={menus}></SiderMenu>
                 </Sider>
                 <Layout>
-                    <Header style={{ background: '#fff', padding: 0 }}>
+                    <Header style={{ background: '#fff', padding: 0,display:'flex',justifyContent:'space-between'}}>
                         <span style={{ marginLeft: '20px'}}>{'卡车之家前端系统'}</span>
+                        <div className="exit" onClick={this.exitLogin}><Icon type="import" />退出登录</div>
                     </Header>
                     <Content style={{ margin: '16px', minWidth: 900}}>
                         <div style={{ padding: 24, background: '#fff', minHeight: 360}}>
