@@ -1,14 +1,8 @@
 import React, { Component } from 'react';
-import { Select,Table, Divider,Button,Input } from 'antd';
+import { Select,Table,Button,Input } from 'antd';
+import ReactHtmlParser from 'react-html-parser';
 import './bugList.less';
 import XHR from "../../../api/apis";
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link,
-    useParams
-} from "react-router-dom";
 const { Search } = Input;
 const { Option } = Select;
 
@@ -42,6 +36,9 @@ const columns = [
         title: '描述',
         dataIndex: 'description',
         key: 'description',
+        render:(text)=>{
+            return ReactHtmlParser(text)
+        }
     }
 ];
 class bugList extends Component {
@@ -113,6 +110,7 @@ class bugList extends Component {
             })
         })
     };
+    // 获取列表数据
     fetch = (params = {}) => {
         this.setState({ loading: true });
         XHR.getBugList({
@@ -132,7 +130,11 @@ class bugList extends Component {
             });
         });
     };
-
+    // 提问题及发布问题,提问题类型0，发布问题类型1
+    publishBug=(type)=>{
+        console.log('bughhhh',type)
+        window.location.href = `./addBug?type=${type}`
+    }
     // 获取列表
     // getList = ()=>{
     //     XHR.getBugList({
@@ -173,8 +175,8 @@ class bugList extends Component {
                             style={{ width: 400 }} enterButton
                         />
                         <div className="button">
-                            <Button type="primary">提问题</Button>
-                            <Button>发布问题</Button>
+                            <Button type="primary" onClick={this.publishBug.bind(this,0)}>提问题</Button>
+                            <Button onClick={this.publishBug.bind(this,1)}>发布问题</Button>
                         </div>
                     </div>
                 </div>
@@ -189,9 +191,6 @@ class bugList extends Component {
     componentDidMount () {
         this.fetch();
         this.getDepartment()
-    }
-    componentWillReceiveProps(){
-        console.log('1111222222233333')
     }
 }
 

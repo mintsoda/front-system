@@ -25,12 +25,17 @@ const menus = [
     {
         title: 'bug列表',
         icon: 'bug',
-        key: '/bug',
-        subs: [
-            {key: '/bug/bugList', title: '列表', icon: '',},
-            {key: '/bug/addBug', title: '新增', icon: '',}
-            ]
+        key: '/bug/bugList'
     },
+    // {
+    //     title: 'bug列表',
+    //     icon: 'bug',
+    //     key: '/bug',
+    //     subs: [
+    //         {key: '/bug/bugList', title: '列表', icon: '',},
+    //         {key: '/bug/addBug', title: '新增', icon: '',}
+    //         ]
+    // },
     {
         title: '其他',
         icon: 'ellipsis',

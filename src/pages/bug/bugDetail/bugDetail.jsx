@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import {List, Radio, Button, Pagination, message, Spin, Table} from 'antd';
+import {List, Radio, Button, Pagination, message, Spin} from 'antd';
 import ReplyContent from '../../../components/ReplyContent'
 import './bugDetail.less';
-import Editor from 'wangeditor'
-import ReactDOM from "react-dom";
 import XHR from "../../../api/apis";
 import ReactHtmlParser from 'react-html-parser';
 

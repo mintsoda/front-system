@@ -5,15 +5,18 @@ import {
     Form,
     Input,
     Select,
-    Button,
+    Button, message,
 } from 'antd';
 import Editor from 'wangeditor'
 import XHR from "../../../api/apis";
+import SolveContent from '../../../components/SolveContent'
 
 const { Option } = Select;
 
-class addBug extends React.Component {
+class addBug extends Component {
     state = {
+        // 类型
+        type: 0,
         // 部门列表
         departmentList: [],
         // 标题
@@ -27,28 +30,49 @@ class addBug extends React.Component {
         // 解决办法
         answer: ''
     };
-    handleChange = (e) => {
-        e.persist();
-        this.setState({
-            title: e.target.value
-        })
-    };
+    // 渲染解决办法，类型为0没有解决办法，类型为1有解决办法
+    renderSolveContent =()=>{
+        const { getFieldDecorator } = this.props.form;
+        if(this.state.type){
+            return <Form.Item label={'解决办法'}>
+                {
+                    getFieldDecorator('answer', {
+                        rules: [{ required: true, message: '请输入描述!' }],
+                    })(<SolveContent changeSolve = {solve => this.changeSolve(solve)}></SolveContent>)
+                }
+            </Form.Item>;
+        }
+    }
+    // 改变解决办法
+    changeSolve=(solve)=>{
+        this.props.form.setFieldsValue({
+            'answer': solve
+        });
+    }
+    // 部门选择框改变
     handleSelectChange = (value)=>{
         this.setState({
           department: value
       })
     };
+    // 表单保存
     handleSubmit = e => {
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
-                console.log(values)
                 XHR.publishBug(values).then((res) => {
-                   console.log()
+                    let tip = `${this.state.type?'发布':'提'}问题成功！`;
+                    message.success(tip);
+                    if(document.referrer.indexOf('bugList')>-1){
+                        window.history.go(-1);
+                    }else{
+                        window.location.replace('./bugList');
+                    }
                 })
             }
         });
     };
+    // 获取部门
     getDepartment= ()=>{
         XHR.getDepartment({}).then((res) => {
             this.setState({
@@ -56,17 +80,8 @@ class addBug extends React.Component {
             })
         })
     };
-    validateEditorFrom = (rule, value, callback) => {
-        //此处根据富文本框的text值进行验证，但注意富文本框中输入空格，使用‘&nbsp‘表示，此方法不能处理只输入空格的验证。
-        // if (this.state.editorText.trim() === '') {
-        //     callback('不能为空');
-        // }
-        // Note: 必须总是返回一个 callback，否则 validateFieldsAndScroll 无法响应
-        callback();
-    }
     render() {
         const { getFieldDecorator } = this.props.form;
-
         const formItemLayout = {
             labelCol: {
                 xs: { span: 16 },
@@ -107,9 +122,6 @@ class addBug extends React.Component {
                     {
                         getFieldDecorator('description', {
                             rules: [{ required: true, message: '请输入描述!' }],
-                        },{
-                            // 使用自定义的校验规则
-                            validator: this.validateEditorFrom
                         })(<div ref={(ref) => this.editorElem = ref} style={{textAlign: 'left'}}></div>)
                     }
                 </Form.Item>
@@ -131,16 +143,7 @@ class addBug extends React.Component {
                         </Select>)
                     }
                 </Form.Item>
-                <Form.Item label={'解决办法'}>
-                    {
-                        getFieldDecorator('answer', {
-                            rules: [{ required: true, message: '请输入描述!' }],
-                        },{
-                            // 使用自定义的校验规则
-                            validator: this.validateEditorFrom
-                        })(<div ref={(ref) => this.editorElemSolve = ref} style={{textAlign: 'left'}}></div>)
-                    }
-                </Form.Item>
+                {this.renderSolveContent()}
                 <Form.Item {...tailFormItemLayout}>
                     <Button type="primary" htmlType="submit">
                         保存
@@ -150,6 +153,10 @@ class addBug extends React.Component {
         );
     }
     componentDidMount() {
+        let type = window.location.href.match(/type=(\d+)/) ? window.location.href.match(/type=(\d+)/)[1] : 0
+        this.setState({
+            type: parseInt(type)
+        })
         this.getDepartment()
         const elem = ReactDOM.findDOMNode(this.editorElem)
         const editor = new Editor(elem)
@@ -161,19 +168,19 @@ class addBug extends React.Component {
             });
         }
         editor.create()
-
-        const editorElemSolve = ReactDOM.findDOMNode(this.editorElemSolve)
-        const editorSolve = new Editor(editorElemSolve)
-        // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
-        editorSolve.customConfig.onchange = html => {
-            // this.setState({
-            //     answer: html
-            // })
-            this.props.form.setFieldsValue({
-                'answer': html
-            });
-        }
-        editorSolve.create()
+        //
+        // const editorElemSolve = ReactDOM.findDOMNode(this.editorElemSolve)
+        // const editorSolve = new Editor(editorElemSolve)
+        // // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
+        // editorSolve.customConfig.onchange = html => {
+        //     // this.setState({
+        //     //     answer: html
+        //     // })
+        //     this.props.form.setFieldsValue({
+        //         'answer': html
+        //     });
+        // }
+        // editorSolve.create()
     }
 }
 

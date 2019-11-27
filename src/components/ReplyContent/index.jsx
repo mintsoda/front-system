@@ -1,11 +1,8 @@
 import React from 'react';
 import Editor from 'wangeditor'
-import {Button} from "antd";
 
 class ReplyContent extends React.Component {
     state = {
-        openKeys: [],
-        selectedKeys: []
     }
     render() {
         return (<div className="reply-content" ref='reply'>
