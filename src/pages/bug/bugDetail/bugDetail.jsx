@@ -150,7 +150,7 @@ class bugDetail extends Component {
                     <div className="title">
                         <h2>{this.state.pagination.total}个回答</h2>
                         <Radio.Group value={this.state.order} onChange={this.handleOrderChange}>
-                            <Radio.Button value="0">默认排序</Radio.Button>
+                            <Radio.Button value="0">默认排序'</Radio.Button>
                             <Radio.Button value="1">时间排序</Radio.Button>
                         </Radio.Group>
                     </div>

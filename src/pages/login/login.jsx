@@ -11,15 +11,11 @@ class login extends Component {
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 XHR.login(values).then((res) => {
-                    let {tip,token} = res.data
-                    console.log(token)
+                    let {token} = res.data
                     if(token){
                         storage.set('token',token)
                         window.location.href = '/'
                     }
-                    console.log(res);
-                }).catch(() => {
-
                 })
             }
         });

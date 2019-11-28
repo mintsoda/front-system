@@ -2,7 +2,7 @@ import fetch from "./ajax"
 
 export const DEBUG = true // 是否开发模式
 // const ROOT_DEV ='/api'
-const ROOT_DEV = 'http://127.0.0.1:7002' // 测试地址
+const ROOT_DEV = 'http://127.0.0.1:7001' // 测试地址
 const ROOT = 'http://dmio-api.360che.com'
 const baseUrl = DEBUG ? ROOT_DEV : ROOT
 

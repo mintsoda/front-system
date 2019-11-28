@@ -1,6 +1,7 @@
 import axios from "axios";
 import qs from "qs";
 import storage from "../utils/storage";
+import {message} from "antd";
 axios.defaults.timeout = 8000
 // axios.defaults.withCredentials = true // 让ajax携带cookie
 
@@ -29,11 +30,19 @@ axios.interceptors.response.use(
         if (err.response) {
             switch (err.response.status) {
                 case 401:
-                    console.log('登录失败')
+                    message.error('登录失效，请重新登录！');
                     window.location.href = '/login'
             }
+            if(err.response.data&&err.response.data.error){
+                if(err.response.data.error.validate){
+                    let tips = err.response.data.error.validate[0].message;
+                    message.error(tips);
+                }
+                if(err.response.data.error.tips){
+                    message.error(err.response.data.error.tips);
+                }
+            }
         }
-        console.log('请求错误：' + err);
         return Promise.reject(err);
     }
 );
