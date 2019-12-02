@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Select,Table,Button,Input,List,Tag } from 'antd';
-import './bugList.less';
-import XHR from "../../../api/apis";
+import '../../style/bugList.less';
+import XHR from "../../api/apis";
 const { Search } = Input;
 const { Option } = Select;
 

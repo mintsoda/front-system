@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import './addBug.less';
+import '../../style/addBug.less';
 import {
     Form,
     Input,
@@ -8,8 +8,8 @@ import {
     Button, message,
 } from 'antd';
 import Editor from 'wangeditor'
-import XHR from "../../../api/apis";
-import SolveContent from '../../../components/SolveContent'
+import XHR from "../../api/apis";
+import SolveContent from '../../components/SolveContent'
 
 const { Option } = Select;
 

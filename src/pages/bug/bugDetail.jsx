@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {List, Radio, Button, Pagination, message, Spin,Tag} from 'antd';
-import ReplyContent from '../../../components/ReplyContent'
-import './bugDetail.less';
-import XHR from "../../../api/apis";
+import ReplyContent from '../../components/ReplyContent'
+import '../../style/bugDetail.less';
+import XHR from "../../api/apis";
 import Editor from 'wangeditor';
 
 class bugDetail extends Component {

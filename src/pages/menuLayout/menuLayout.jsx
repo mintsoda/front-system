@@ -6,13 +6,13 @@ import {
 import { Layout,Icon } from 'antd';
 // 引入子页面
 import home from '../home/home';
-import addBug from '../bug/addBug/addBug';
-import bugList from '../bug/bugList/bugList';
-import bugDetail from '../bug/bugDetail/bugDetail';
+import addBug from '../bug/addBug';
+import bugList from '../bug/bugList';
+import bugDetail from '../bug/bugDetail';
 import other from '../other/other';
 // 引入组件
 import SiderMenu from "../../components/SiderMenu/index";
-import './basicLayout.less';
+import './menuLayout.less';
 import storage from "../../utils/storage";
 
 const { Header, Content, Sider } = Layout;
@@ -70,7 +70,7 @@ const routes = [
         main: other
     }
 ];
-class BasicLayout extends React.Component{
+class MenuLayout extends React.Component{
     state = {
         collapsed: false,
         openKeys: [],
@@ -117,4 +117,4 @@ class BasicLayout extends React.Component{
         );
     }
 }
-export default BasicLayout
+export default MenuLayout
