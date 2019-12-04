@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import {BrowserRouter as Router,Switch,Route,Redirect} from 'react-router-dom'
+import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom'
 import BasicLayout from './pages/basicLayout'
 import Login from './pages/login'
 import Index from './pages'
 import Register from './pages/register'
+import NotFound from "./pages/notFound";
 
 import addBug from './pages/bug/addBug';
 import bugList from './pages/bug/bugList';
@@ -12,7 +13,7 @@ import storage from "./utils/storage";
 
 const routes = [
   {
-    path: "/index",
+    path: "/",
     component: Index
   },
   {
@@ -30,7 +31,7 @@ const privateRoutes = [
     component: BasicLayout,
     routes: [
       {
-        path: "/pages/addBug",
+        path: "/pages/addBug/:type",
         component: addBug
       },
       {
@@ -38,25 +39,27 @@ const privateRoutes = [
         component: bugList
       },
       {
-        path: "/pages/bugDetail",
+        path: "/pages/bugDetail/:id",
         component: bugDetail
       },
     ]
   }
 ];
-function PrivateRoute({ children, ...rest }) {
+
+function PrivateRoute({children, ...rest}) {
   let token = storage.get('token')
   return (
     <Route
+      exact
       {...rest}
-      render={({ location }) =>
+      render={({location}) =>
         token ? (
           children
         ) : (
           <Redirect
             to={{
               pathname: "/login",
-              state: { from: location }
+              state: {from: location}
             }}
           />
         )
@@ -73,22 +76,23 @@ class App extends Component {
           <Switch>
             {routes.map((route, i) => (
               <Route
-                key ={i}
+                exact
+                key={i}
                 path={route.path}
                 render={props => (
-                    <route.component {...props} routes={route.routes} />
+                  <route.component {...props} routes={route.routes}/>
                 )}
               />
             ))}
-
             {privateRoutes.map((route, i) => (
               <PrivateRoute
-                key ={i}
+                key={i}
               >
-                <route.component {...this.props} path={route.path} routes={route.routes} />
+                <route.component {...this.props} path={route.path} routes={route.routes}/>
               </PrivateRoute>
             ))}
-
+            <Route path='/404' component={NotFound}/>
+            <Redirect from='*' to='/404'/>
           </Switch>
         </Switch>
       </Router>

@@ -4,7 +4,6 @@ import './index.css';
 import 'antd/dist/antd.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-// import Routers from './router';
 
 ReactDOM.render(
             <App/>
